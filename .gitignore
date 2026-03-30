@@ -1,0 +1,20 @@
+# conf
+.claude/
+.gstack/
+
+# build output
+*.zip
+out/
+dist/
+dist-portable/
+node_modules/
+
+# prompts
+PROMPTS.md
+TODOs.md
+task_plan.md
+findings.md
+progress.md
+
+# misc.
+docs/
