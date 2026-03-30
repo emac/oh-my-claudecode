@@ -9,7 +9,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { IPC_CHANNELS } from './types'
 import { discoverProjects } from './projectDiscovery'
 import { getSessions, getSessionMessages } from './sessionReader'
-import { launchResume } from './sessionLauncher'
+import { launchResume, launchNew } from './sessionLauncher'
 import { watchProject, closeAllWatchers } from './sessionWatcher'
 
 let mainWindow: BrowserWindow | null = null
@@ -89,6 +89,11 @@ function registerIpcHandlers(): void {
   /** 在外部终端启动 claude --resume */
   ipcMain.handle(IPC_CHANNELS.LAUNCH_RESUME, async (_event, sessionId: string, projectPath: string) => {
     await launchResume(sessionId, projectPath)
+  })
+
+  /** 在外部终端启动 claude（新 session） */
+  ipcMain.handle(IPC_CHANNELS.LAUNCH_NEW, async (_event, projectPath: string) => {
+    await launchNew(projectPath)
   })
 
   /** 开始监听项目目录 */

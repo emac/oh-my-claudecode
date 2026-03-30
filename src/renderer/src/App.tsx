@@ -283,6 +283,11 @@ export default function App(): JSX.Element {
   const handleResume = async (session: SessionMetadata): Promise<void> => {
     await window.electronAPI.launchResume(session.id, session.projectPath)
   }
+  const handleNew = async (): Promise<void> => {
+    if (selectedProject) {
+      await window.electronAPI.launchNew(selectedProject.realPath)
+    }
+  }
 
   if (loading) {
     return (
@@ -320,6 +325,7 @@ export default function App(): JSX.Element {
         selectedProject={selectedProject}
         onSelect={handleSessionSelect}
         onResume={handleResume}
+        onNew={handleNew}
         width={sessionsWidth}
         collapsed={sessionsCollapsed}
       />

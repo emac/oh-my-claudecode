@@ -14,6 +14,7 @@ interface Props {
   selectedProject: ProjectInfo | null
   onSelect: (session: SessionMetadata) => void
   onResume: (session: SessionMetadata) => void
+  onNew: () => void
   /** 当前栏位宽度（px） */
   width: number
   /** 是否处于收缩模式 */
@@ -32,6 +33,7 @@ export default function SessionList({
   selectedProject,
   onSelect,
   onResume,
+  onNew,
   width,
   collapsed
 }: Props): JSX.Element {
@@ -50,25 +52,59 @@ export default function SessionList({
       {/* 头部（收缩时隐藏） */}
       {!collapsed && (
         <div style={{
-          padding: '14px 20px 12px',
+          padding: '10px 12px 10px 20px',
           borderBottom: '1px solid var(--border)',
           background: 'var(--bg-secondary)',
           flexShrink: 0,
-          overflow: 'hidden'
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
         }}>
-          <div style={{
-            fontWeight: 700,
-            fontSize: '15px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap'
-          }}>
-            {projectName || 'No project selected'}
-          </div>
-          {selectedProject && (
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {sessions.length} {sessions.length === 1 ? 'session' : 'sessions'}
+          {/* 项目名 + session 数量 */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{
+              fontWeight: 700,
+              fontSize: '15px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}>
+              {projectName || 'No project selected'}
             </div>
+            {selectedProject && (
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {sessions.length} {sessions.length === 1 ? 'session' : 'sessions'}
+              </div>
+            )}
+          </div>
+
+          {/* + New 按钮 */}
+          {selectedProject && (
+            <button
+              onClick={onNew}
+              title="Start a new Claude Code session in this project"
+              style={{
+                background: 'var(--accent)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                padding: '3px 10px',
+                fontSize: '11px',
+                fontWeight: 500,
+                cursor: 'pointer',
+                flexShrink: 0,
+                transition: 'background 0.1s'
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'var(--accent-hover)'
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'var(--accent)'
+              }}
+            >
+              + New
+            </button>
           )}
         </div>
       )}

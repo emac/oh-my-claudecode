@@ -179,3 +179,118 @@ function tryTerminalApp(sessionId: string, projectPath: string): boolean {
     return false
   }
 }
+
+// ── New Session ───────────────────────────────────────────
+
+/**
+ * 在外部终端中启动 claude（不带 --resume），创建新 session。
+ * 启动策略与 launchResume 一致，按平台选择终端。
+ *
+ * @param projectPath - 项目真实路径（终端工作目录）
+ */
+export async function launchNew(projectPath: string): Promise<void> {
+  if (!projectPath || !projectPath.trim()) {
+    await dialog.showMessageBox({
+      type: 'warning',
+      title: 'Cannot Start Session',
+      message: 'Project path is missing.',
+      buttons: ['OK']
+    })
+    return
+  }
+
+  if (!existsSync(projectPath)) {
+    await dialog.showMessageBox({
+      type: 'warning',
+      title: 'Cannot Start Session',
+      message: `Project directory not found:\n${projectPath}\n\nThe directory may have been moved or deleted.`,
+      buttons: ['OK']
+    })
+    return
+  }
+
+  let launched = false
+  if (process.platform === 'darwin') {
+    launched = tryITerm2New(projectPath) || tryTerminalAppNew(projectPath)
+  } else {
+    launched = tryWindowsTerminalNew(projectPath) || tryCmdNew(projectPath)
+  }
+
+  if (!launched) {
+    await dialog.showMessageBox({
+      type: 'error',
+      title: 'Cannot Start Session',
+      message: 'Could not launch a terminal. Please open a terminal manually and run:\n\nclaude',
+      buttons: ['OK']
+    })
+  }
+}
+
+/** Windows Terminal — 新 session */
+function tryWindowsTerminalNew(projectPath: string): boolean {
+  try {
+    const child = spawn(
+      'wt.exe',
+      ['-d', projectPath, '--', 'cmd', '/k', 'claude'],
+      { detached: true, stdio: 'ignore', shell: false }
+    )
+    child.unref()
+    return true
+  } catch {
+    return false
+  }
+}
+
+/** cmd /k — 新 session（降级） */
+function tryCmdNew(projectPath: string): boolean {
+  try {
+    const child = spawn(
+      'cmd.exe',
+      ['/k', `cd /d "${projectPath}" && claude`],
+      { detached: true, stdio: 'ignore', shell: false }
+    )
+    child.unref()
+    return true
+  } catch {
+    return false
+  }
+}
+
+/** iTerm2 — 新 session */
+function tryITerm2New(projectPath: string): boolean {
+  const iTermPath = findITerm2()
+  if (!iTermPath) return false
+  try {
+    const safePath = projectPath.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+    const script = `
+      tell application "iTerm2"
+        activate
+        create window with default profile
+        tell current session of current window
+          write text "cd \\"${safePath}\\" && claude"
+        end tell
+      end tell
+    `
+    execFileSync('osascript', ['-e', script], { timeout: 5000 })
+    return true
+  } catch {
+    return false
+  }
+}
+
+/** Terminal.app — 新 session（降级） */
+function tryTerminalAppNew(projectPath: string): boolean {
+  try {
+    const safePath = projectPath.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+    const script = `
+      tell application "Terminal"
+        activate
+        do script "cd \\"${safePath}\\" && claude"
+      end tell
+    `
+    execFileSync('osascript', ['-e', script], { timeout: 5000 })
+    return true
+  } catch {
+    return false
+  }
+}

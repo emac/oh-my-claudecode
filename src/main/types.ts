@@ -29,6 +29,7 @@ export const IPC_CHANNELS = {
   GET_SESSIONS: 'get-sessions',
   GET_SESSION_MESSAGES: 'get-session-messages',
   LAUNCH_RESUME: 'launch-resume',
+  LAUNCH_NEW: 'launch-new',
   WATCH_PROJECT: 'watch-project',
   PROJECT_UPDATED: 'project-updated'
 } as const
