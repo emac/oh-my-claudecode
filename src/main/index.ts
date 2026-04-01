@@ -5,10 +5,12 @@
 
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
+import { rm } from 'fs/promises'
+import { existsSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { IPC_CHANNELS } from './types'
 import { discoverProjects } from './projectDiscovery'
-import { getSessions, getSessionMessages } from './sessionReader'
+import { getSessions, getSessionMessages, invalidateCache } from './sessionReader'
 import { launchResume, launchNew } from './sessionLauncher'
 import { watchProject, closeAllWatchers } from './sessionWatcher'
 
@@ -101,5 +103,18 @@ function registerIpcHandlers(): void {
     if (mainWindow) {
       watchProject(projectsDir, mainWindow)
     }
+  })
+
+  /**
+   * 删除指定 session 的 JSONL 文件，并清除对应缓存
+   * 文件路径格式：<projectsDir>/<sessionId>.jsonl
+   */
+  ipcMain.handle(IPC_CHANNELS.DELETE_SESSION, async (_event, sessionId: string, projectsDir: string) => {
+    const jsonlPath = join(projectsDir, `${sessionId}.jsonl`)
+    if (!existsSync(jsonlPath)) {
+      throw new Error(`Session file not found: ${jsonlPath}`)
+    }
+    await rm(jsonlPath)
+    invalidateCache(jsonlPath)
   })
 }

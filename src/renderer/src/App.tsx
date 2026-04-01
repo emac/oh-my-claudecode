@@ -150,6 +150,8 @@ export default function App(): JSX.Element {
   const [sessions, setSessions] = useState<SessionMetadata[]>([])
   const [selectedSession, setSelectedSession] = useState<SessionMetadata | null>(null)
   const [loading, setLoading] = useState(true)
+  /** 当前搜索关键词，由 SessionList 上报，传入 SessionDetail 用于高亮和定位 */
+  const [searchKeyword, setSearchKeyword] = useState('')
 
   // 主题：默认 dark
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
@@ -289,6 +291,40 @@ export default function App(): JSX.Element {
     }
   }
 
+  const handleDelete = async (session: SessionMetadata): Promise<void> => {
+    if (!selectedProject) return
+    const confirmed = window.confirm(`Delete this session?\n\n"${session.title}"`)
+    if (!confirmed) return
+    await window.electronAPI.deleteSession(session.id, selectedProject.projectsDir)
+    if (selectedSession?.id === session.id) {
+      setSelectedSession(null)
+    }
+    loadSessions(selectedProject)
+  }
+
+  /**
+   * 在所有 session 的消息内容中搜索关键词
+   * 逐个加载 session 消息，过滤出包含关键词的 session
+   */
+  const handleSearchContent = async (keyword: string): Promise<SessionMetadata[]> => {
+    if (!selectedProject) return []
+    const lower = keyword.toLowerCase()
+    const matched: SessionMetadata[] = []
+    for (const session of sessions) {
+      try {
+        const messages = await window.electronAPI.getSessionMessages(
+          session.id,
+          selectedProject.projectsDir
+        )
+        const hit = messages.some((m) => m.content.toLowerCase().includes(lower))
+        if (hit) matched.push(session)
+      } catch {
+        // 单个 session 读取失败时跳过
+      }
+    }
+    return matched
+  }
+
   if (loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: 'var(--text-secondary)' }}>
@@ -325,7 +361,10 @@ export default function App(): JSX.Element {
         selectedProject={selectedProject}
         onSelect={handleSessionSelect}
         onResume={handleResume}
+        onDelete={handleDelete}
+        onSearchContent={handleSearchContent}
         onNew={handleNew}
+        onKeywordChange={setSearchKeyword}
         width={sessionsWidth}
         collapsed={sessionsCollapsed}
       />
@@ -341,6 +380,7 @@ export default function App(): JSX.Element {
       <SessionDetail
         session={selectedSession}
         selectedProject={selectedProject}
+        searchKeyword={searchKeyword}
         minWidth={MIN_CHAT_WIDTH}
       />
     </div>

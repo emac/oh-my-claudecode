@@ -15,6 +15,7 @@ export interface ElectronAPI {
   getSessionMessages: (sessionId: string, projectsDir: string) => Promise<Message[]>
   launchResume: (sessionId: string, projectPath: string) => Promise<void>
   launchNew: (projectPath: string) => Promise<void>
+  deleteSession: (sessionId: string, projectsDir: string) => Promise<void>
   watchProject: (projectsDir: string) => Promise<void>
   onProjectUpdated: (callback: (data: { projectsDir: string }) => void) => () => void
 }
@@ -33,6 +34,9 @@ const api: ElectronAPI = {
 
   launchNew: (projectPath) =>
     ipcRenderer.invoke(IPC_CHANNELS.LAUNCH_NEW, projectPath),
+
+  deleteSession: (sessionId, projectsDir) =>
+    ipcRenderer.invoke(IPC_CHANNELS.DELETE_SESSION, sessionId, projectsDir),
 
   watchProject: (projectsDir) =>
     ipcRenderer.invoke(IPC_CHANNELS.WATCH_PROJECT, projectsDir),

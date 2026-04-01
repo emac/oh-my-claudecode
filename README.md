@@ -17,6 +17,8 @@ A desktop app to browse, review, and resume your Claude Code sessions.
 - **Auto-discovery** — scans `~/.claude/projects/` on startup, no configuration needed
 - **Three-panel layout** — Projects / Sessions / Chat History, all resizable
 - **Resume sessions** — one click to reopen a session in your terminal (`claude --resume`)
+- **Search & sort** — search sessions by title or full chat history content; sort by newest or oldest first; press **Ctrl+F** to focus the search bar
+- **Keyword highlight & navigation** — matched keywords are highlighted across session titles and chat messages; use **↑ / ↓** arrows in the Chat History header to jump between matches
 - **Collapsible panels** — click any divider to collapse/expand; collapsed panels show initials or `Session#N`
 - **Message expand** — long messages are folded to 4 lines by default; click **↓ Expand** to read in full
 - **Dark / Light theme** — toggle in the top-right corner, defaults to dark
@@ -46,6 +48,12 @@ A desktop app to browse, review, and resume your Claude Code sessions.
 - Each session card shows title, last active time, and message count
 - Refreshes automatically when session files change
 
+**Search & sort sessions**
+- Press **Ctrl+F** or click the search bar to search; triggers after 2 characters
+- Searches session titles first; if no title matches, click **Continue searching in chat history?** to search full message content
+- Click **✕** to reset search, or switch projects to clear automatically
+- Click **↓ / ↑** to toggle sort between newest-first and oldest-first
+
 **Resume a session**
 - Click **Resume** on any session card to run `claude --resume <session-id>` in a terminal
 - Windows: prefers Windows Terminal, falls back to cmd
@@ -56,6 +64,8 @@ A desktop app to browse, review, and resume your Claude Code sessions.
 - **YOU** (blue bubble, right-aligned): your messages
 - **CLAUDE** (grey bubble, left-aligned): Claude's replies
 - Long messages fold to 4 lines; click **↓ Expand** to read in full, **↑ Collapse** to fold back
+- When a keyword is active, matched messages are highlighted; the current match is highlighted in orange, others in yellow
+- Use **↑ / ↓** buttons in the Chat History header to navigate between matches (cyclic); the counter shows current position (e.g. `2 / 5`)
 
 **Resize panels**
 
@@ -123,6 +133,8 @@ macOS packaging requires `resources/icon.icns`. Convert from PNG using `iconutil
 - **自动发现** — 启动后自动扫描 `~/.claude/projects/`，无需手动配置
 - **三栏布局** — Projects / Sessions / Chat History，宽度可自由调整
 - **恢复会话** — 一键在终端中执行 `claude --resume`
+- **搜索与排序** — 按标题或完整对话内容搜索会话；支持时间升/降序排列；按 **Ctrl+F** 快速激活搜索栏
+- **关键词高亮与导航** — 匹配关键词在会话标题和对话消息中同步高亮；Chat History 头部提供 **↑ / ↓** 箭头，可在匹配消息间逐条跳转
 - **栏位收缩** — 点击分隔条收缩/展开，收缩后显示首字母缩写或 `Session#N`
 - **消息展开** — 长消息默认折叠 4 行，点击 **↓ Expand** 查看完整内容
 - **深色/浅色主题** — 右上角一键切换，默认深色
@@ -152,6 +164,12 @@ macOS packaging requires `resources/icon.icns`. Convert from PNG using `iconutil
 - 每张会话卡片显示标题、最后活跃时间、消息数量
 - 文件变更时自动刷新
 
+**搜索与排序会话**
+- 按 **Ctrl+F** 或点击搜索栏开始搜索，输入 2 个字符后触发
+- 优先匹配标题；无标题结果时点击 **Continue searching in chat history?** 搜索完整消息内容
+- 点击 **✕** 重置搜索，切换项目时自动清空
+- 点击 **↓ / ↑** 在"最新优先"与"最旧优先"之间切换排序
+
 **恢复会话**
 - 点击 **Resume** 按钮，自动在终端中执行 `claude --resume <session-id>`
 - Windows：优先 Windows Terminal，降级到 cmd
@@ -162,6 +180,8 @@ macOS packaging requires `resources/icon.icns`. Convert from PNG using `iconutil
 - **YOU**（蓝色气泡，右对齐）：用户消息
 - **CLAUDE**（灰色气泡，左对齐）：Claude 回复
 - 长消息折叠 4 行，点击 **↓ Expand** 展开，**↑ Collapse** 收起
+- 关键词激活时，命中消息高亮显示：当前导航位置为橙色，其余匹配为黄色
+- Chat History 头部 **↑ / ↓** 按钮可在匹配消息间循环跳转，计数器显示当前位置（如 `2 / 5`）
 
 **调整栏位宽度**
 
