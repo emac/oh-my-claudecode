@@ -117,4 +117,12 @@ function registerIpcHandlers(): void {
     await rm(jsonlPath)
     invalidateCache(jsonlPath)
   })
+
+  /**
+   * 用系统文件管理器打开指定目录（Windows: Explorer，macOS: Finder）
+   * @author Alfie
+   */
+  ipcMain.handle(IPC_CHANNELS.OPEN_FOLDER, async (_event, folderPath: string) => {
+    await shell.openPath(folderPath)
+  })
 }

@@ -23,11 +23,18 @@ const sessionCache = new Map<string, SessionMetadata[]>()
 export function getCwdFromJsonl(jsonlPath: string): string | null {
   try {
     const content = readFileSync(jsonlPath, 'utf-8')
-    const firstLine = content.split('\n')[0]
-    if (!firstLine?.trim()) return null
-    const entry = JSON.parse(firstLine)
-    if (typeof entry.cwd === 'string' && entry.cwd.length > 0) {
-      return entry.cwd
+    // 扫描前 20 行，找到第一个含 cwd 字段的条目
+    const lines = content.split('\n').slice(0, 20)
+    for (const line of lines) {
+      if (!line.trim()) continue
+      try {
+        const entry = JSON.parse(line)
+        if (typeof entry.cwd === 'string' && entry.cwd.length > 0) {
+          return entry.cwd
+        }
+      } catch {
+        // 跳过无效 JSON 行
+      }
     }
     return null
   } catch {

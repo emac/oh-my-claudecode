@@ -120,7 +120,11 @@ export default function ProjectList({ projects, selectedProject, onSelect, width
                   cursor: 'pointer',
                   background: isSelected ? 'var(--bg-selected)' : 'transparent',
                   borderLeft: isSelected ? '3px solid var(--accent)' : '3px solid transparent',
-                  transition: 'background 0.1s'
+                  transition: 'background 0.1s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '6px'
                 }}
                 onMouseEnter={(e) => {
                   if (!isSelected) (e.currentTarget as HTMLDivElement).style.background = 'var(--bg-hover)'
@@ -129,23 +133,60 @@ export default function ProjectList({ projects, selectedProject, onSelect, width
                   if (!isSelected) (e.currentTarget as HTMLDivElement).style.background = 'transparent'
                 }}
               >
-                <div style={{
-                  fontWeight: 600,
-                  fontSize: '12px',
-                  color: 'var(--text-primary)',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}>
-                  {name}
+                {/* 项目名 + session 数 */}
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{
+                    fontWeight: 600,
+                    fontSize: '12px',
+                    color: 'var(--text-primary)',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {name}
+                  </div>
+                  <div style={{
+                    fontSize: '11px',
+                    color: 'var(--text-muted)',
+                    marginTop: '2px'
+                  }}>
+                    {project.sessionCount} {project.sessionCount === 1 ? 'session' : 'sessions'}
+                  </div>
                 </div>
-                <div style={{
-                  fontSize: '11px',
-                  color: 'var(--text-muted)',
-                  marginTop: '2px'
-                }}>
-                  {project.sessionCount} {project.sessionCount === 1 ? 'session' : 'sessions'}
-                </div>
+
+                {/* 打开文件夹按钮 */}
+                <button
+                  title="Open folder"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    window.electronAPI.openFolder(project.realPath)
+                  }}
+                  style={{
+                    flexShrink: 0,
+                    background: 'none',
+                    border: 'none',
+                    padding: '2px 4px',
+                    cursor: 'pointer',
+                    color: 'var(--text-muted)',
+                    fontSize: '14px',
+                    lineHeight: 1,
+                    borderRadius: '4px',
+                    opacity: 0.6,
+                    transition: 'opacity 0.1s, color 0.1s'
+                  }}
+                  onMouseEnter={(e) => {
+                    const btn = e.currentTarget as HTMLButtonElement
+                    btn.style.opacity = '1'
+                    btn.style.color = 'var(--accent)'
+                  }}
+                  onMouseLeave={(e) => {
+                    const btn = e.currentTarget as HTMLButtonElement
+                    btn.style.opacity = '0.6'
+                    btn.style.color = 'var(--text-muted)'
+                  }}
+                >
+                  📁
+                </button>
               </div>
             )
           })

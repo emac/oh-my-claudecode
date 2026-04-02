@@ -32,5 +32,6 @@ export const IPC_CHANNELS = {
   LAUNCH_NEW: 'launch-new',
   WATCH_PROJECT: 'watch-project',
   PROJECT_UPDATED: 'project-updated',
-  DELETE_SESSION: 'delete-session'
+  DELETE_SESSION: 'delete-session',
+  OPEN_FOLDER: 'open-folder'
 } as const
